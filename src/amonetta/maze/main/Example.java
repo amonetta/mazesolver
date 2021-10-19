@@ -50,8 +50,8 @@ public class Example {
 		// :: Initialize the solver ::
 		StackingSolver<MatrixTaggedMazeNode, MatrixTaggedMaze> solver = new StackingSolver(
 				// Choose one heuristic method
-				new DecreasingDistanceHeuristic<>(), // Try to decrease distance to the exit of the maze with each movement.
-				//new RandomHeuristic(), // Just choose a random way per each movement.
+				//new DecreasingDistanceHeuristic<>(), // Try to decrease distance to the exit of the maze with each movement.
+				new RandomHeuristic(), // Just choose a random way per each movement.
 				new MatrixTaggedPathFinder(stepsPerPath), // The Path Finder defines the movement rules for the maze solver.
 				true); // Allows or disallows path overlapping.
 
@@ -68,6 +68,7 @@ public class Example {
 						System.out.println(String.format("%s/(%d,%d)", matrixTaggedMazeNode.getTag(), nodePosition[0], nodePosition[1]));
 					}
 			);
+			System.out.println(String.format("Movements: %d", (result.getNodeSequence().size() - 2) / 3 ));
 		}
 	}
 }
