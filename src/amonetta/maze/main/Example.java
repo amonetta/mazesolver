@@ -23,6 +23,7 @@ public class Example {
 			{"D", "C", "D", "D", "A"},
 		};*/
 			// Here the given example for this challenge
+			// Suggestion: add some null spaces to act as path blockers and see as how results changes. ;)
 		String[][] taggedMazeStringMap = {
 				{"A", "B", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A"},
 				{"A", "C", "A", "D", "D", "E", "A", "C", "C", "C", "D", "A"},
@@ -49,9 +50,10 @@ public class Example {
 		// :: Initialize the solver ::
 		StackingSolver<MatrixTaggedMazeNode, MatrixTaggedMaze> solver = new StackingSolver(
 				// Choose one heuristic method
-				//new DecreasingDistanceHeuristic<>(), // Try to decrease distance to the exit of the maze with each movement.
-				new RandomHeuristic(), // Just choose a random way per each movement.
-				new MatrixTaggedPathFinder(stepsPerPath)); // The Path Finder defines the movement rules for the maze solver.
+				new DecreasingDistanceHeuristic<>(), // Try to decrease distance to the exit of the maze with each movement.
+				//new RandomHeuristic(), // Just choose a random way per each movement.
+				new MatrixTaggedPathFinder(stepsPerPath), // The Path Finder defines the movement rules for the maze solver.
+				true); // Allows or disallows path overlapping.
 
 		// :: Solve your maze with given configuration ::
 		MazePath<MatrixTaggedMazeNode> result = solver.solve(maze);

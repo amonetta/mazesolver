@@ -12,15 +12,30 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+/**
+ * <p> The stacking solving strategy uses two stacks to iterate until find the solution like reading a tree. The order to
+ * test solutions is given by the selected heuristic.
+ * <p> With the {@code avoidPAthOverlapping = true} option is possible to prevent find solutions that involves cross over
+ * already given steps.
+ * @param <T>
+ * @param <M>
+ */
 public class StackingSolver<T extends MazeNode, M extends Maze<T>> implements MazeSolver<T,M> {
 
 	private final Heuristic<T> heuristic;
 
 	private final PathFinder<T> pathFinder;
 
-	public StackingSolver(Heuristic<T> heuristic, PathFinder<T> pathFinder) {
+	private final boolean avoidPathOverlapping;
+
+	public StackingSolver(Heuristic<T> heuristic, PathFinder<T> pathFinder, boolean avoidPathOverlapping) {
 		this.heuristic = heuristic;
 		this.pathFinder = pathFinder;
+		this.avoidPathOverlapping = avoidPathOverlapping;
+	}
+
+	public StackingSolver(Heuristic<T> heuristic, PathFinder<T> pathFinder) {
+		this(heuristic, pathFinder, false);
 	}
 
 	@Override
@@ -50,16 +65,27 @@ public class StackingSolver<T extends MazeNode, M extends Maze<T>> implements Ma
 
 			// Recurrent iterations
 			T headNode = mazePath.getFinalNode();
-			visitedNodes.add(headNode);
-				// Get possible paths from actual node.
+
+			// Get possible paths from actual node.
 			List<MazePath<T>> newPaths = pathFinder.getPathsFrom(headNode);
 
 			//Prevent infinite loop
-			newPaths = newPaths.stream().filter(newMazePath -> !visitedNodes.contains(newMazePath.getFinalNode())).collect(Collectors.toList());
+			if (avoidPathOverlapping) {
+				visitedNodes.addAll(mazePath.getNodeSequence());
+				newPaths = newPaths.stream().filter(newMazePath -> !visitedNodes.stream().anyMatch(visitedNode -> newMazePath.getNodeSequence().contains(visitedNode))).collect(Collectors.toList());
+			} else {
+				visitedNodes.add(headNode);
+				newPaths = newPaths.stream().filter(newMazePath -> !visitedNodes.contains(newMazePath.getFinalNode())).collect(Collectors.toList());
+			}
 
 			if (newPaths.isEmpty()) {
 				// If no more path from here, give a step back.
 				solutionStack.pop();
+				if (avoidPathOverlapping) {
+					visitedNodes.removeAll(mazePath.getNodeSequence());
+				} else {
+					visitedNodes.remove(headNode);
+				}
 			} else {
 				// sort possible paths according given heuristic.
 				heuristic.sortPaths(maze, newPaths);

@@ -10,10 +10,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This movement's rules force to move over the same node tag giving n-steps.
+ */
 public class MatrixTaggedPathFinder implements PathFinder<MatrixTaggedMazeNode> {
 
 	private final int pathSize;
 
+	/**
+	 * @param pathSize number of steps per movement.
+	 */
 	public MatrixTaggedPathFinder(int pathSize) {
 		this.pathSize = pathSize;
 	}
@@ -23,6 +29,9 @@ public class MatrixTaggedPathFinder implements PathFinder<MatrixTaggedMazeNode> 
 		return maze instanceof TaggedMaze;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<MazePath<MatrixTaggedMazeNode>> getPathsFrom(MatrixTaggedMazeNode mazeNode) {
 		return getPathsFrom(mazeNode, pathSize);
@@ -33,6 +42,12 @@ public class MatrixTaggedPathFinder implements PathFinder<MatrixTaggedMazeNode> 
 		return new MatrixMazePath(maze.getEntranceNode());
 	}
 
+	/**
+	 * Recursive definition to find paths from given node.
+	 * @param mazeNode base node to look up paths.
+	 * @param n number of nodes per path.
+	 * @return all found neighbor paths for the given node.
+	 */
 	List<MazePath<MatrixTaggedMazeNode>> getPathsFrom(MatrixTaggedMazeNode mazeNode, int n) {
 		if (n == 1) {
 			Collection<MatrixTaggedMazeNode> neighbors = mazeNode.getNeighbors();

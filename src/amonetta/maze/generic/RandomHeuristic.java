@@ -7,6 +7,12 @@ import amonetta.maze.MazePath;
 
 import java.util.List;
 
+/**
+ * <p> This heuristic can be applied to any kind of {@link Maze}
+ * <p> If we have no clue about which possible path can be the best one, so random selection will give us a 50-50 chance
+ * to find an appropriate path.
+ * @param <T>
+ */
 public class RandomHeuristic <T extends MazeNode> implements Heuristic<T> {
 
 	@Override

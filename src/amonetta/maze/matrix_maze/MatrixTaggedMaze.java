@@ -2,13 +2,17 @@ package amonetta.maze.matrix_maze;
 
 import amonetta.maze.MetricMaze;
 import amonetta.maze.TaggedMaze;
-import amonetta.maze.TaggedMazeNode;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
+/**
+ * <p>This kind of maze can be represented as a matrix of n x m dimension which nodes have a simple string tag.
+ * <p>The movement's rules are implemented at {@link MatrixTaggedPathFinder}.
+ */
 public class MatrixTaggedMaze implements MetricMaze<MatrixTaggedMazeNode>, TaggedMaze<MatrixTaggedMazeNode> {
 
 	private final MatrixTaggedMazeNode[][] matrixMazeMap;
@@ -62,7 +66,7 @@ public class MatrixTaggedMaze implements MetricMaze<MatrixTaggedMazeNode>, Tagge
 		if (mazeNodePosition[1] < (matrixMazeMap[0].length - 1) && matrixMazeMap[mazeNodePosition[0]][mazeNodePosition[1] + 1] != null) {
 			neighbors.add(matrixMazeMap[mazeNodePosition[0]][mazeNodePosition[1] + 1]);
 		}
-		return Set.copyOf(neighbors);
+		return neighbors;
 	}
 
 	public static class MatrixTaggedMazeBuilder {
@@ -77,8 +81,16 @@ public class MatrixTaggedMaze implements MetricMaze<MatrixTaggedMazeNode>, Tagge
 		 * Define if the given configuration is valid to build a maze.
 		 */
 		public boolean isValidMazeMap() {
-			// Not yet implemented.
-			return true;
+			// This should be implemented as separately validations rules to raise a comprehensive message,
+			// but it's implemented as a simple validation condition for simplification due that it's the aim of this challenge.
+			return mazeMapTags != null &&
+					entrancePosition != null &&
+					outputPosition != null &&
+					mazeMapTags.length != 0 && mazeMapTags[0].length != 0 &&
+					entrancePosition[0] >= 0 && entrancePosition[1] >= 0 &&
+					outputPosition[0] >= 0 && outputPosition[1] >= 0 &&
+					entrancePosition[0] < mazeMapTags.length && outputPosition[0] < mazeMapTags.length &&
+					entrancePosition[1] < mazeMapTags[1].length && outputPosition[1] < mazeMapTags[1].length;
 		}
 
 		public MatrixTaggedMazeBuilder setMazeMap(String[][] mazeMapTags) {
@@ -103,13 +115,17 @@ public class MatrixTaggedMaze implements MetricMaze<MatrixTaggedMazeNode>, Tagge
 			MatrixTaggedMazeNode[][] matrixMazeMap = new MatrixTaggedMazeNode[mazeMapTags.length][mazeMapTags[0].length];
 			for (int i = 0; i < matrixMazeMap.length; i++) {
 				for (int j = 0; j < matrixMazeMap[0].length; j++) {
-					matrixMazeMap[i][j] = new MatrixTaggedMazeNode(mazeMapTags[i][j], i, j);
+					if (mazeMapTags[i][j] != null) {
+						matrixMazeMap[i][j] = new MatrixTaggedMazeNode(mazeMapTags[i][j], i, j);
+					}
 				}
 			}
 			MatrixTaggedMaze matrixTaggedMaze = new MatrixTaggedMaze(matrixMazeMap,
 					matrixMazeMap[entrancePosition[0]][entrancePosition[1]],
 					matrixMazeMap[outputPosition[0]][outputPosition[1]]);
-			Arrays.stream(matrixMazeMap).flatMap(Arrays::stream).forEach(matrixTaggedMazeNode -> matrixTaggedMazeNode.setMaze(matrixTaggedMaze));
+			Arrays.stream(matrixMazeMap).flatMap(Arrays::stream)
+					.filter(Objects::nonNull)
+					.forEach(matrixTaggedMazeNode -> matrixTaggedMazeNode.setMaze(matrixTaggedMaze));
 			return matrixTaggedMaze;
 		}
 	}

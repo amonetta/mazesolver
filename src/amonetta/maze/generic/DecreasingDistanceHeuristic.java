@@ -9,6 +9,12 @@ import amonetta.maze.MetricMaze;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * <p>This Heuristic can be applied to any {@link MetricMaze}
+ * <p>If it's possible to know the distance from any node to another, this heuristic will try to prioritize the path that
+ * gets closer to the output.
+ * @param <T>
+ */
 public class DecreasingDistanceHeuristic<T extends MazeNode> implements Heuristic<T> {
 
 	@Override
